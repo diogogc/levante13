@@ -212,12 +212,12 @@
             font-size: 0.7rem;
         }
 
-        /* Tooltips Sci-Fi Retro */
+        /* Tooltip Flutuante Dinâmico ao Lado do Cursor */
         .tooltip-container {
-            position: relative;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
+            cursor: help;
         }
 
         .tooltip-icone {
@@ -231,57 +231,38 @@
             color: var(--ciano);
             font-size: 0.65rem;
             font-weight: bold;
-            cursor: help;
             border: 1px solid var(--ciano);
             user-select: none;
             transition: all 0.2s ease;
         }
 
-        .tooltip-icone:hover {
+        .tooltip-container:hover .tooltip-icone {
             background: var(--ciano);
             color: #050813;
             box-shadow: 0 0 8px var(--ciano);
         }
 
         .tooltip-texto {
-            visibility: hidden;
-            opacity: 0;
-            width: 220px;
-            background: rgba(13, 21, 42, 0.98);
+            display: none;
+        }
+
+        #tooltipFlutuanteGlobal {
+            position: fixed;
+            display: none;
+            z-index: 99999;
+            max-width: 260px;
+            background: rgba(10, 16, 35, 0.98);
             color: #f8fafc;
-            text-align: left;
-            border-radius: 4px;
-            padding: 8px 10px;
-            position: absolute;
-            z-index: 1000;
-            bottom: 130%;
-            left: 50%;
-            transform: translateX(-50%);
             border: 1px solid var(--dourado);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), 0 0 8px rgba(250, 204, 21, 0.3);
-            font-size: 0.72rem;
-            line-height: 1.35;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.85), 0 0 10px rgba(250, 204, 21, 0.35);
+            pointer-events: none;
             text-transform: none;
             letter-spacing: 0px;
-            pointer-events: none;
-            transition: opacity 0.2s, visibility 0.2s;
             word-break: normal;
-        }
-
-        .tooltip-texto::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--dourado) transparent transparent transparent;
-        }
-
-        .tooltip-container:hover .tooltip-texto {
-            visibility: visible;
-            opacity: 1;
         }
 
     </style>
@@ -1201,6 +1182,52 @@ const ASSET_MENTOR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAIA
             };
             reader.readAsText(file);
         });
+
+        // --- SISTEMA DE TOOLTIP DINÂMICO AO LADO DO MOUSE ---
+        const tooltipGlobal = document.createElement('div');
+        tooltipGlobal.id = 'tooltipFlutuanteGlobal';
+        document.body.appendChild(tooltipGlobal);
+
+        document.querySelectorAll('.tooltip-container').forEach(container => {
+            const spanTexto = container.querySelector('.tooltip-texto');
+            if (!spanTexto) return;
+            const texto = spanTexto.textContent.trim();
+
+            container.addEventListener('mouseenter', (e) => {
+                tooltipGlobal.textContent = texto;
+                tooltipGlobal.style.display = 'block';
+                posicionarTooltipAoLadoDoMouse(e);
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                posicionarTooltipAoLadoDoMouse(e);
+            });
+
+            container.addEventListener('mouseleave', () => {
+                tooltipGlobal.style.display = 'none';
+            });
+        });
+
+        function posicionarTooltipAoLadoDoMouse(e) {
+            const offsetDistX = 14;
+            const offsetDistY = 14;
+            let posX = e.clientX + offsetDistX;
+            let posY = e.clientY + offsetDistY;
+
+            // Evita vazar da borda direita da janela
+            const rect = tooltipGlobal.getBoundingClientRect();
+            if (posX + rect.width > window.innerWidth - 12) {
+                posX = e.clientX - rect.width - offsetDistX;
+            }
+
+            // Evita vazar da borda inferior da janela
+            if (posY + rect.height > window.innerHeight - 12) {
+                posY = e.clientY - rect.height - offsetDistY;
+            }
+
+            tooltipGlobal.style.left = `${posX}px`;
+            tooltipGlobal.style.top = `${posY}px`;
+        }
 
         // Inicialização
         aplicarConfigNosCampos(CONFIG_EXEMPLO_PADRAO);
