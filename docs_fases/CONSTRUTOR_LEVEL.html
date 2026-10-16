@@ -211,6 +211,79 @@
             padding: 2px 8px;
             font-size: 0.7rem;
         }
+
+        /* Tooltips Sci-Fi Retro */
+        .tooltip-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tooltip-icone {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #1e293b;
+            color: var(--ciano);
+            font-size: 0.65rem;
+            font-weight: bold;
+            cursor: help;
+            border: 1px solid var(--ciano);
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .tooltip-icone:hover {
+            background: var(--ciano);
+            color: #050813;
+            box-shadow: 0 0 8px var(--ciano);
+        }
+
+        .tooltip-texto {
+            visibility: hidden;
+            opacity: 0;
+            width: 220px;
+            background: rgba(13, 21, 42, 0.98);
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 4px;
+            padding: 8px 10px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 1px solid var(--dourado);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), 0 0 8px rgba(250, 204, 21, 0.3);
+            font-size: 0.72rem;
+            line-height: 1.35;
+            text-transform: none;
+            letter-spacing: 0px;
+            pointer-events: none;
+            transition: opacity 0.2s, visibility 0.2s;
+            word-break: normal;
+        }
+
+        .tooltip-texto::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dourado) transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-texto {
+            visibility: visible;
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
@@ -236,11 +309,19 @@
             <div class="secao-titulo">1. METADADOS E IDENTIFICAÇÃO DO SETOR</div>
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>ID da Fase</label>
+                    <label class="tooltip-container">
+                        <span>ID da Fase</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Número sequencial único do nível (ex: 1 a 6 ou 99 para testes). Usado no nome da pasta e no registro do motor.</span>
+                    </label>
                     <input type="number" id="faseId" value="99" min="1" max="99">
                 </div>
                 <div class="campo">
-                    <label>Tema Estético</label>
+                    <label class="tooltip-container">
+                        <span>Tema Estético</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Define a ambientação narrativa da fase (ex: cyber_matrix, industrial_smog, toxic_waste, tyranny_citadel).</span>
+                    </label>
                     <select id="faseTheme">
                         <option value="cyber_matrix" selected>cyber_matrix (Redes/Digital)</option>
                         <option value="industrial_smog">industrial_smog (Fábricas/Trabalho)</option>
@@ -252,31 +333,55 @@
                 </div>
             </div>
             <div class="campo">
-                <label>Nome do Setor / Fase</label>
+                <label class="tooltip-container">
+                    <span>Nome do Setor / Fase</span>
+                    <span class="tooltip-icone">?</span>
+                    <span class="tooltip-texto">Título principal da missão exibido nos banners de transição e no HUD do jogador.</span>
+                </label>
                 <input type="text" id="faseName" value="Setor de Testes: Operação Alvorada">
             </div>
             <div class="campo">
-                <label>Subtítulo Operacional</label>
+                <label class="tooltip-container">
+                    <span>Subtítulo Operacional</span>
+                    <span class="tooltip-icone">?</span>
+                    <span class="tooltip-texto">Contexto ou objetivo da frente de batalha exibido logo abaixo do título do setor.</span>
+                </label>
                 <input type="text" id="faseSubtitle" value="Homologação de Novos Vetores de Resistência Popular">
             </div>
 
             <div class="secao-titulo">2. HOLOTRANSMISSÃO DA RESISTÊNCIA (MENTORIA)</div>
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>Nome do Mentor</label>
+                    <label class="tooltip-container">
+                        <span>Nome do Mentor</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Nome do líder ou oficial da resistência popular que realiza a holotransmissão no início do setor.</span>
+                    </label>
                     <input type="text" id="mentorNome" value="Camarada Instrutor">
                 </div>
                 <div class="campo">
-                    <label>Cargo / Patente</label>
+                    <label class="tooltip-container">
+                        <span>Cargo / Patente</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Posto ou função de vanguarda do mentor (ex: Oficial de Contrainteligência, Comissário de Engenharia).</span>
+                    </label>
                     <input type="text" id="mentorRole" value="Comissário de Engenharia Tática da Vanguarda">
                 </div>
                 <div class="campo">
-                    <label>Caminho do Avatar</label>
+                    <label class="tooltip-container">
+                        <span>Caminho do Avatar</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Caminho relativo do arquivo PNG da imagem do mentor (ex: levels/level_1/mentor.png).</span>
+                    </label>
                     <input type="text" id="mentorAvatar" value="levels/level_exemplo/mentor.png">
                 </div>
             </div>
             <div class="campo">
-                <label>Diálogo da Holotransmissão (1 frase por linha)</label>
+                <label class="tooltip-container">
+                    <span>Diálogo da Holotransmissão (1 frase por linha)</span>
+                    <span class="tooltip-icone">?</span>
+                    <span class="tooltip-texto">Falas exibidas na caixa sci-fi central com teletipo. Cada linha no campo vira um balão sequencial clicável.</span>
+                </label>
                 <textarea id="mentorDialogo">Atenção, combatentes da Vanguarda 13! Este é o módulo de treinamento tático da resistência.
 As forças reacionárias tentam sabotar nossa soberania digital e territorial com frotas autônomas.
 Mantenham a formação, coletem as cápsulas de apoio popular e neutralizem o protótipo imperial!
@@ -286,7 +391,11 @@ A vitória depende da disciplina da nossa classe trabalhadora. Fogo sem trégua!
             <div class="secao-titulo">3. PARÂMETROS DA GRADE E PADRÃO DE MOVIMENTO</div>
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>Padrão Matemático (pattern)</label>
+                    <label class="tooltip-container">
+                        <span>Padrão Matemático (pattern)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Fórmula cinemática da frota: classic (bloco rígido), zigzag (serpente), orbit (vórtices), advance_retreat (investida), pincer (pinça) ou chaos (misto).</span>
+                    </label>
                     <select id="gridPattern" onchange="atualizarParametrosSimulador()">
                         <option value="classic">classic (Marcha clássica rígida)</option>
                         <option value="zigzag" selected>zigzag (Onda serpenteante fluida)</option>
@@ -297,30 +406,54 @@ A vitória depende da disciplina da nossa classe trabalhadora. Fogo sem trégua!
                     </select>
                 </div>
                 <div class="campo">
-                    <label>Linhas (rows)</label>
+                    <label class="tooltip-container">
+                        <span>Linhas (rows)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Quantidade de fileiras horizontais de naves invasoras (normalmente de 2 a 6).</span>
+                    </label>
                     <input type="number" id="gridRows" value="4" min="2" max="6" onchange="atualizarParametrosSimulador()">
                 </div>
                 <div class="campo">
-                    <label>Colunas (cols)</label>
+                    <label class="tooltip-container">
+                        <span>Colunas (cols)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Quantidade de naves por fileira (normalmente de 4 a 10). O produto rows x cols define o total de inimigos.</span>
+                    </label>
                     <input type="number" id="gridCols" value="8" min="4" max="10" onchange="atualizarParametrosSimulador()">
                 </div>
             </div>
 
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>Velocidade Inicial (initialSpeed)</label>
+                    <label class="tooltip-container">
+                        <span>Velocidade Inicial (initialSpeed)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Velocidade horizontal base da marcha da grade em pixels por quadro (sugerido: 0.5 a 1.2).</span>
+                    </label>
                     <input type="number" id="gridInitialSpeed" value="0.65" step="0.05" min="0.2" max="2.0" onchange="atualizarParametrosSimulador()">
                 </div>
                 <div class="campo">
-                    <label>Descida na Borda (stepY)</label>
+                    <label class="tooltip-container">
+                        <span>Descida na Borda (stepY)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Distância em pixels que a esquadra inimiga desce em direção à nave do jogador ao bater nas paredes laterais.</span>
+                    </label>
                     <input type="number" id="gridStepY" value="4" step="1" min="1" max="15">
                 </div>
                 <div class="campo">
-                    <label>Aceleração por Abate</label>
+                    <label class="tooltip-container">
+                        <span>Aceleração por Abate</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Multiplicador de aceleração aplicado a cada inimigo destruído (efeito Space Invaders acelerando conforme a frota diminui).</span>
+                    </label>
                     <input type="number" id="gridSpeedMult" value="1.015" step="0.001">
                 </div>
                 <div class="campo">
-                    <label>Chance Mergulho Rasante</label>
+                    <label class="tooltip-container">
+                        <span>Chance Mergulho Rasante</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Probabilidade de naves isoladas quebrarem a formação e mergulharem diretamente sobre o jogador em ataque rasante.</span>
+                    </label>
                     <input type="number" id="gridDiveChance" value="0.03" step="0.01">
                 </div>
             </div>
@@ -328,29 +461,53 @@ A vitória depende da disciplina da nossa classe trabalhadora. Fogo sem trégua!
             <div class="secao-titulo">4. NAVE CAPITÂNIA (CHEFE DO SETOR)</div>
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>ID do Chefe</label>
+                    <label class="tooltip-container">
+                        <span>ID do Chefe</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Identificador interno do chefe no código e relatórios de combate (ex: superbot_desinformacao).</span>
+                    </label>
                     <input type="text" id="bossId" value="leviata_imperial_teste">
                 </div>
                 <div class="campo">
-                    <label>Nome do Chefe</label>
+                    <label class="tooltip-container">
+                        <span>Nome do Chefe</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Nome pomposo da embarcação capitânia inimiga (ex: O Leviatã do Capital Parasitário).</span>
+                    </label>
                     <input type="text" id="bossName" value="O Leviatã do Capital Parasitário">
                 </div>
                 <div class="campo">
-                    <label>Título / Posto</label>
+                    <label class="tooltip-container">
+                        <span>Título / Posto</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Subtítulo ou patente da capitânia imperial exibido no banner de alerta de entrada do boss.</span>
+                    </label>
                     <input type="text" id="bossTitle" value="Fortaleza Móvel dos Especuladores">
                 </div>
             </div>
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>Pontos de Vida (HP)</label>
+                    <label class="tooltip-container">
+                        <span>Pontos de Vida (HP)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Resistência total do chefe. Ao atingir 50% de HP ele sempre ejeta uma cápsula de Power-Up para ajudar o jogador!</span>
+                    </label>
                     <input type="number" id="bossHp" value="35" min="10" max="150">
                 </div>
                 <div class="campo">
-                    <label>Pontos Concedidos</label>
+                    <label class="tooltip-container">
+                        <span>Pontos Concedidos</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Pontos somados ao placar geral do jogador após destruir completamente a capitânia.</span>
+                    </label>
                     <input type="number" id="bossPoints" value="2500" step="100">
                 </div>
                 <div class="campo">
-                    <label>Padrão de Disparo (attackPattern)</label>
+                    <label class="tooltip-container">
+                        <span>Padrão de Disparo (attackPattern)</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Comportamento balístico: circular_spread (leque de 5), pincer_press (salvas duplas), spiral_slice (espiral), toxic_quad (4 agulhas), holy_cross (cruz) ou hydra (4 fases).</span>
+                    </label>
                     <select id="bossPattern">
                         <option value="circular_spread" selected>circular_spread (Leque de 5 projéteis)</option>
                         <option value="pincer_press">pincer_press (Salvas duplas verticais rápidas)</option>
@@ -365,15 +522,27 @@ A vitória depende da disciplina da nossa classe trabalhadora. Fogo sem trégua!
             <div class="secao-titulo">5. PALETA CROMÁTICA DO SETOR</div>
             <div class="campo-grupo">
                 <div class="campo">
-                    <label>Cor Primária</label>
+                    <label class="tooltip-container">
+                        <span>Cor Primária</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Cor dominante do setor, usada nas naves invasoras secundárias, miras e partículas.</span>
+                    </label>
                     <input type="color" id="corPrimaria" value="#38bdf8">
                 </div>
                 <div class="campo">
-                    <label>Cor Secundária</label>
+                    <label class="tooltip-container">
+                        <span>Cor Secundária</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Cor de contraste, aplicada na primeira fileira de invasores mais fortes e projéteis inimigos.</span>
+                    </label>
                     <input type="color" id="corSecundaria" value="#ef4444">
                 </div>
                 <div class="campo">
-                    <label>Cor de Fundo</label>
+                    <label class="tooltip-container">
+                        <span>Cor de Fundo</span>
+                        <span class="tooltip-icone">?</span>
+                        <span class="tooltip-texto">Cor atmosférica do cosmos do setor quando a imagem bg.png possuir transparência ou carregar fallback.</span>
+                    </label>
                     <input type="color" id="corFundo" value="#070b19">
                 </div>
             </div>
