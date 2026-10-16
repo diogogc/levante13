@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONSTRUTOR TÁTICO DE NÍVEIS — LEVANTE 13 (OFFLINE / ZERO-SERVER)</title>
+    <style>
+        :root {
+            --vermelho-campanha: #dc2626;
+            --dourado: #facc15;
+            --ciano: #38bdf8;
+            --verde: #22c55e;
+            --fundo: #070b19;
+            --card-bg: #0d152a;
+            --borda: #1e293b;
+            --texto: #f8fafc;
+            --texto-mutado: #94a3b8;
+            --fonte: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--fundo);
+            color: var(--texto);
+            font-family: var(--fonte);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--card-bg);
+            border: 2px solid var(--vermelho-campanha);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.3);
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            color: var(--dourado);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .sub-header {
+            font-size: 0.8rem;
+            color: var(--ciano);
+        }
+
+        .acoes-topo {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: var(--vermelho-campanha);
+            color: #fff;
+            border: 2px solid var(--dourado);
+            padding: 8px 14px;
+            font-family: var(--fonte);
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.15s ease;
+        }
+
+        button:hover {
+            background: #b91c1c;
+            box-shadow: 0 0 10px var(--dourado);
+        }
+
+        button.btn-secundario {
+            background: #1e293b;
+            border-color: var(--ciano);
+            color: var(--ciano);
+        }
+
+        button.btn-secundario:hover {
+            background: #334155;
+            box-shadow: 0 0 10px var(--ciano);
+        }
+
+        .layout-principal {
+            display: grid;
+            grid-template-columns: 1fr 440px;
+            gap: 16px;
+            flex: 1;
+        }
+
+        @media (max-width: 950px) {
+            .layout-principal {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Painel Formulário */
+        .painel-editor {
+            background: var(--card-bg);
+            border: 1px solid var(--borda);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .secao-titulo {
+            color: var(--dourado);
+            border-bottom: 1px solid var(--vermelho-campanha);
+            padding-bottom: 4px;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+
+        .campo-grupo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.72rem;
+            color: var(--texto-mutado);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            background: #050813;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 6px 10px;
+            font-family: var(--fonte);
+            font-size: 0.85rem;
+            border-radius: 0;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--ciano);
+            box-shadow: 0 0 6px var(--ciano);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        /* Simulador Canvas */
+        .painel-simulador {
+            background: var(--card-bg);
+            border: 2px solid var(--ciano);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        .canvas-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background: #000;
+            border: 2px solid #1e293b;
+        }
+
+        canvas {
+            display: block;
+            background: #050813;
+            width: 360px;
+            height: 520px;
+            image-rendering: pixelated;
+        }
+
+        .sim-controles {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--texto-mutado);
+        }
+
+        .badge-sim {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--verde);
+            border: 1px solid var(--verde);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>CONSTRUTOR TÁTICO DE NÍVEIS // LEVANTE 13</h1>
+            <div class="sub-header">GERADOR DE SETORES ESPACIAIS OFFLINE (ZERO DEPENDÊNCIAS / EXECUTA DIRETO NO NAVEGADOR)</div>
+        </div>
+        <div class="acoes-topo">
+            <input type="file" id="inputCarregarJson" accept=".json" style="display: none;">
+            <button class="btn-secundario" onclick="document.getElementById('inputCarregarJson').click()">📂 Carregar JSON</button>
+            <button onclick="baixarConfigJson()">💾 Baixar config.json</button>
+        </div>
+    </header>
+
+    <div class="layout-principal">
+        <!-- PAINEL EDITOR -->
+        <div class="painel-editor">
+            
+            <div class="secao-titulo">1. METADADOS E IDENTIFICAÇÃO DO SETOR</div>
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>ID da Fase</label>
+                    <input type="number" id="faseId" value="1" min="1" max="99">
+                </div>
+                <div class="campo">
+                    <label>Tema Estético</label>
+                    <select id="faseTheme">
+                        <option value="cyber_matrix">cyber_matrix (Redes/Digital)</option>
+                        <option value="industrial_smog">industrial_smog (Fábricas/Trabalho)</option>
+                        <option value="toxic_waste">toxic_waste (Amazônia/Mineração)</option>
+                        <option value="biohazard">biohazard (Saúde/Ciência)</option>
+                        <option value="holy_inquisition">holy_inquisition (Fanatismo/Cruzada)</option>
+                        <option value="tyranny_citadel">tyranny_citadel (Fortaleza Imperial)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="campo">
+                <label>Nome do Setor / Fase</label>
+                <input type="text" id="faseName" value="Setor das Redes: O Gabinete do Ódio">
+            </div>
+            <div class="campo">
+                <label>Subtítulo Operacional</label>
+                <input type="text" id="faseSubtitle" value="Guerra da Informação e Desinformação em Massa">
+            </div>
+
+            <div class="secao-titulo">2. HOLOTRANSMISSÃO DA RESISTÊNCIA (MENTORIA)</div>
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>Nome do Mentor</label>
+                    <input type="text" id="mentorNome" value="Ana Elisa">
+                </div>
+                <div class="campo">
+                    <label>Cargo / Patente</label>
+                    <input type="text" id="mentorRole" value="Oficial de Contrainteligência e Guerra Digital">
+                </div>
+                <div class="campo">
+                    <label>Caminho do Avatar</label>
+                    <input type="text" id="mentorAvatar" value="levels/level_1/mentor.png">
+                </div>
+            </div>
+            <div class="campo">
+                <label>Diálogo da Holotransmissão (1 frase por linha)</label>
+                <textarea id="mentorDialogo">Companheiras e companheiros da Vanguarda 13! Aqui é Ana Elisa na transmissão.
+O Gabinete Imperial ativou uma rede massiva de disparos de mentiras e ódio.
+Quebrem a criptografia do ódio e destruam os servidores centrais!
+Atenção aos POWER-UPS: colete as cápsulas da resistência para fortalecer sua nave!</textarea>
+            </div>
+
+            <div class="secao-titulo">3. PARÂMETROS DA GRADE E PADRÃO DE MOVIMENTO</div>
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>Padrão Matemático (pattern)</label>
+                    <select id="gridPattern" onchange="atualizarParametrosSimulador()">
+                        <option value="classic">classic (Marcha clássica rígida)</option>
+                        <option value="zigzag" selected>zigzag (Onda serpenteante fluida)</option>
+                        <option value="orbit">orbit (Vórtices circulares planetários)</option>
+                        <option value="advance_retreat">advance_retreat (Investida e recuo militar)</option>
+                        <option value="pincer">pincer (Pinça de cerco convergente)</option>
+                        <option value="chaos">chaos (Padrões mistos por fileira)</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label>Linhas (rows)</label>
+                    <input type="number" id="gridRows" value="4" min="2" max="6" onchange="atualizarParametrosSimulador()">
+                </div>
+                <div class="campo">
+                    <label>Colunas (cols)</label>
+                    <input type="number" id="gridCols" value="8" min="4" max="10" onchange="atualizarParametrosSimulador()">
+                </div>
+            </div>
+
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>Velocidade Inicial (initialSpeed)</label>
+                    <input type="number" id="gridInitialSpeed" value="0.65" step="0.05" min="0.2" max="2.0" onchange="atualizarParametrosSimulador()">
+                </div>
+                <div class="campo">
+                    <label>Descida na Borda (stepY)</label>
+                    <input type="number" id="gridStepY" value="4" step="1" min="1" max="15">
+                </div>
+                <div class="campo">
+                    <label>Aceleração por Abate</label>
+                    <input type="number" id="gridSpeedMult" value="1.015" step="0.001">
+                </div>
+                <div class="campo">
+                    <label>Chance Mergulho Rasante</label>
+                    <input type="number" id="gridDiveChance" value="0.03" step="0.01">
+                </div>
+            </div>
+
+            <div class="secao-titulo">4. NAVE CAPITÂNIA (CHEFE DO SETOR)</div>
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>ID do Chefe</label>
+                    <input type="text" id="bossId" value="superbot_desinformacao">
+                </div>
+                <div class="campo">
+                    <label>Nome do Chefe</label>
+                    <input type="text" id="bossName" value="O Super-Robô da Mentira">
+                </div>
+                <div class="campo">
+                    <label>Título / Posto</label>
+                    <input type="text" id="bossTitle" value="Nave Capitânia da Desinformação">
+                </div>
+            </div>
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>Pontos de Vida (HP)</label>
+                    <input type="number" id="bossHp" value="30" min="10" max="150">
+                </div>
+                <div class="campo">
+                    <label>Pontos Concedidos</label>
+                    <input type="number" id="bossPoints" value="2000" step="100">
+                </div>
+                <div class="campo">
+                    <label>Padrão de Disparo (attackPattern)</label>
+                    <select id="bossPattern">
+                        <option value="circular_spread">circular_spread (Leque de 5 projéteis)</option>
+                        <option value="pincer_press">pincer_press (Salvas duplas verticais rápidas)</option>
+                        <option value="spiral_slice">spiral_slice (Espiral helicoidal de lâminas)</option>
+                        <option value="toxic_quad">toxic_quad (Rajada de 4 agulhas ácidas)</option>
+                        <option value="holy_cross">holy_cross (Rajada cruciforme expansiva)</option>
+                        <option value="hydra_multi_stage">hydra_multi_stage (Chefe Final em 4 fases)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="secao-titulo">5. PALETA CROMÁTICA DO SETOR</div>
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label>Cor Primária</label>
+                    <input type="color" id="corPrimaria" value="#38bdf8">
+                </div>
+                <div class="campo">
+                    <label>Cor Secundária</label>
+                    <input type="color" id="corSecundaria" value="#ef4444">
+                </div>
+                <div class="campo">
+                    <label>Cor de Fundo</label>
+                    <input type="color" id="corFundo" value="#070b19">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PAINEL SIMULADOR -->
+        <div class="painel-simulador">
+            <div class="sim-controles">
+                <span class="badge-sim">● SIMULADOR DE FÍSICA ATIVO</span>
+                <span id="labelContagemInimigos">Inimigos: 32</span>
+            </div>
+            <div class="canvas-container">
+                <canvas id="simCanvas" width="360" height="520"></canvas>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--texto-mutado); text-align: center; line-height: 1.4;">
+                A grade acima simula o motor idêntico de <code>js/game.js</code> com osciladores senoidais, limites de tela e marcha lateral contínua.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SIMULADOR DE GRADE EM TEMPO REAL ---
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let simGradeX = 0;
+        let simGradeY = 30;
+        let simDirecao = 1;
+        let simTempo = 0;
+        let simInimigos = [];
+
+        function atualizarParametrosSimulador() {
+            const rows = parseInt(document.getElementById('gridRows').value) || 4;
+            const cols = parseInt(document.getElementById('gridCols').value) || 8;
+            document.getElementById('labelContagemInimigos').textContent = `Inimigos: ${rows * cols}`;
+
+            simInimigos = [];
+            const espX = 36;
+            const espY = 28;
+            const inicioX = (canvas.width - ((cols - 1) * espX + 24)) / 2;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    simInimigos.push({
+                        linha: r,
+                        coluna: c,
+                        baseX: inicioX + c * espX,
+                        baseY: 40 + r * espY,
+                        x: 0,
+                        y: 0,
+                        largura: 22,
+                        altura: 16
+                    });
+                }
+            }
+        }
+
+        function calcularOffsetSimulador(inimigo, padrao, tempo, totalCols, totalRows) {
+            switch (padrao) {
+                case 'zigzag': {
+                    const ox = Math.sin(tempo * 0.028 + inimigo.linha * 0.7) * 8;
+                    const oy = Math.cos(tempo * 0.028 + inimigo.coluna * 0.4) * 3;
+                    return { x: ox, y: oy };
+                }
+                case 'orbit': {
+                    const fase = inimigo.coluna * 0.75 + inimigo.linha * 1.25;
+                    const ox = Math.cos(tempo * 0.045 + fase) * 12;
+                    const oy = Math.sin(tempo * 0.045 + fase) * 8;
+                    return { x: ox, y: oy };
+                }
+                case 'advance_retreat': {
+                    const ciclo = tempo % 240;
+                    let oy = 0;
+                    if (ciclo < 90) oy = -12 * (ciclo / 90);
+                    else if (ciclo < 140) oy = -12 + 40 * ((ciclo - 90) / 50);
+                    else oy = 28 * (1 - ((ciclo - 140) / 100));
+                    const ox = Math.sin(tempo * 0.07 + inimigo.coluna * 0.4) * 6;
+                    return { x: ox, y: oy };
+                }
+                case 'pincer': {
+                    const centroCol = (totalCols - 1) / 2;
+                    const distCentro = inimigo.coluna - centroCol;
+                    const ox = distCentro * (Math.sin(tempo * 0.05) * 3);
+                    const oy = Math.abs(distCentro) * (Math.cos(tempo * 0.05) * 4) + Math.sin(tempo * 0.07 + inimigo.linha * 0.8) * 6;
+                    return { x: ox, y: oy };
+                }
+                case 'chaos': {
+                    const padroes = ['advance_retreat', 'orbit', 'zigzag', 'pincer'];
+                    const p = padroes[inimigo.linha % padroes.length];
+                    return calcularOffsetSimulador(inimigo, p, tempo, totalCols, totalRows);
+                }
+                case 'classic':
+                default:
+                    return { x: 0, y: 0 };
+            }
+        }
+
+        function loopSimulador() {
+            simTempo++;
+            const vel = parseFloat(document.getElementById('gridInitialSpeed').value) || 0.65;
+            const padrao = document.getElementById('gridPattern').value;
+            const totalCols = parseInt(document.getElementById('gridCols').value) || 8;
+            const totalRows = parseInt(document.getElementById('gridRows').value) || 4;
+            const stepY = parseFloat(document.getElementById('gridStepY').value) || 4;
+
+            simGradeX += vel * simDirecao;
+
+            let baterParede = false;
+            for (const inimigo of simInimigos) {
+                const off = calcularOffsetSimulador(inimigo, padrao, simTempo, totalCols, totalRows);
+                inimigo.x = inimigo.baseX + simGradeX + off.x;
+                inimigo.y = inimigo.baseY + simGradeY + off.y;
+
+                if (simDirecao === 1 && (inimigo.x + inimigo.largura >= canvas.width - 8)) {
+                    baterParede = true;
+                } else if (simDirecao === -1 && (inimigo.x <= 8)) {
+                    baterParede = true;
+                }
+            }
+
+            if (baterParede) {
+                simDirecao *= -1;
+                simGradeY += stepY;
+                if (simGradeY > 200) simGradeY = 30; // loop de volta no simulador
+            }
+
+            // Renderiza cena
+            ctx.fillStyle = document.getElementById('corFundo').value || '#050813';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grade de fundo
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            for (let x = 0; x < canvas.width; x += 20) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 20) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            // Invasores simulados
+            const corPrimaria = document.getElementById('corPrimaria').value || '#38bdf8';
+            const corSecundaria = document.getElementById('corSecundaria').value || '#ef4444';
+
+            for (const inimigo of simInimigos) {
+                ctx.fillStyle = inimigo.linha === 0 ? corSecundaria : corPrimaria;
+                ctx.fillRect(inimigo.x, inimigo.y, inimigo.largura, inimigo.altura);
+
+                // Asas / canhões pixel retrô
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(inimigo.x + inimigo.largura / 2 - 2, inimigo.y + inimigo.altura - 2, 4, 3);
+            }
+
+            // Nave da resistência simulada no fundo
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height - 40);
+            ctx.lineTo(canvas.width / 2 - 14, canvas.height - 20);
+            ctx.lineTo(canvas.width / 2 + 14, canvas.height - 20);
+            ctx.closePath();
+            ctx.fill();
+
+            requestAnimationFrame(loopSimulador);
+        }
+
+        // --- EXPORTAÇÃO E IMPORTAÇÃO DE CONFIG.JSON ---
+        function montarObjetoConfig() {
+            const linhasDialogo = document.getElementById('mentorDialogo').value
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length > 0);
+
+            return {
+                id: parseInt(document.getElementById('faseId').value) || 1,
+                name: document.getElementById('faseName').value,
+                subtitle: document.getElementById('faseSubtitle').value,
+                theme: document.getElementById('faseTheme').value,
+                holotransmission: {
+                    mentor: document.getElementById('mentorNome').value,
+                    role: document.getElementById('mentorRole').value,
+                    avatar: document.getElementById('mentorAvatar').value,
+                    dialogue: linhasDialogo
+                },
+                grid: {
+                    rows: parseInt(document.getElementById('gridRows').value) || 4,
+                    cols: parseInt(document.getElementById('gridCols').value) || 8,
+                    spacingX: 42,
+                    spacingY: 36,
+                    pattern: document.getElementById('gridPattern').value,
+                    duration: 180,
+                    initialSpeed: parseFloat(document.getElementById('gridInitialSpeed').value) || 0.65,
+                    stepY: parseFloat(document.getElementById('gridStepY').value) || 4,
+                    speedMultiplierPerKill: parseFloat(document.getElementById('gridSpeedMult').value) || 1.015,
+                    diveChance: parseFloat(document.getElementById('gridDiveChance').value) || 0.03
+                },
+                enemyTypes: [
+                    { id: "drone_padrao", name: "Drone de Propaganda", hp: 1, points: 50, color: "#94a3b8", behavior: "march" },
+                    { id: "troll_infiltrado", name: "Invasor Rasante", hp: 2, points: 120, color: "#f87171", behavior: "dive" },
+                    { id: "servidor_blindado", name: "Guarda Imperial", hp: 3, points: 250, color: "#ef4444", behavior: "tank" }
+                ],
+                boss: {
+                    id: document.getElementById('bossId').value,
+                    name: document.getElementById('bossName').value,
+                    title: document.getElementById('bossTitle').value,
+                    hp: parseInt(document.getElementById('bossHp').value) || 30,
+                    points: parseInt(document.getElementById('bossPoints').value) || 2000,
+                    attackPattern: document.getElementById('bossPattern').value
+                },
+                palette: {
+                    primary: document.getElementById('corPrimaria').value,
+                    secondary: document.getElementById('corSecundaria').value,
+                    background: document.getElementById('corFundo').value
+                }
+            };
+        }
+
+        function baixarConfigJson() {
+            const config = montarObjetoConfig();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "config.json");
+            dlAnchor.click();
+        }
+
+        document.getElementById('inputCarregarJson').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const c = JSON.parse(evt.target.result);
+                    if (c.id) document.getElementById('faseId').value = c.id;
+                    if (c.theme) document.getElementById('faseTheme').value = c.theme;
+                    if (c.name) document.getElementById('faseName').value = c.name;
+                    if (c.subtitle) document.getElementById('faseSubtitle').value = c.subtitle;
+                    if (c.holotransmission) {
+                        if (c.holotransmission.mentor) document.getElementById('mentorNome').value = c.holotransmission.mentor;
+                        if (c.holotransmission.role) document.getElementById('mentorRole').value = c.holotransmission.role;
+                        if (c.holotransmission.avatar) document.getElementById('mentorAvatar').value = c.holotransmission.avatar;
+                        if (Array.isArray(c.holotransmission.dialogue)) {
+                            document.getElementById('mentorDialogo').value = c.holotransmission.dialogue.join('\n');
+                        }
+                    }
+                    if (c.grid) {
+                        if (c.grid.rows) document.getElementById('gridRows').value = c.grid.rows;
+                        if (c.grid.cols) document.getElementById('gridCols').value = c.grid.cols;
+                        if (c.grid.pattern) document.getElementById('gridPattern').value = c.grid.pattern;
+                        if (c.grid.initialSpeed) document.getElementById('gridInitialSpeed').value = c.grid.initialSpeed;
+                        if (c.grid.stepY) document.getElementById('gridStepY').value = c.grid.stepY;
+                        if (c.grid.speedMultiplierPerKill) document.getElementById('gridSpeedMult').value = c.grid.speedMultiplierPerKill;
+                        if (c.grid.diveChance) document.getElementById('gridDiveChance').value = c.grid.diveChance;
+                    }
+                    if (c.boss) {
+                        if (c.boss.id) document.getElementById('bossId').value = c.boss.id;
+                        if (c.boss.name) document.getElementById('bossName').value = c.boss.name;
+                        if (c.boss.title) document.getElementById('bossTitle').value = c.boss.title;
+                        if (c.boss.hp) document.getElementById('bossHp').value = c.boss.hp;
+                        if (c.boss.points) document.getElementById('bossPoints').value = c.boss.points;
+                        if (c.boss.attackPattern) document.getElementById('bossPattern').value = c.boss.attackPattern;
+                    }
+                    if (c.palette) {
+                        if (c.palette.primary) document.getElementById('corPrimaria').value = c.palette.primary;
+                        if (c.palette.secondary) document.getElementById('corSecundaria').value = c.palette.secondary;
+                        if (c.palette.background) document.getElementById('corFundo').value = c.palette.background;
+                    }
+                    atualizarParametrosSimulador();
+                    alert('Nível carregado com sucesso no Construtor Tático!');
+                } catch (err) {
+                    alert('Erro ao processar arquivo JSON: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Inicialização
+        atualizarParametrosSimulador();
+        loopSimulador();
+    </script>
+</body>
+</html>
