@@ -222,6 +222,7 @@
         </div>
         <div class="acoes-topo">
             <input type="file" id="inputCarregarJson" accept=".json" style="display: none;">
+            <button class="btn-secundario" onclick="carregarExemploPadrao()">⚡ Carregar Exemplo</button>
             <button class="btn-secundario" onclick="document.getElementById('inputCarregarJson').click()">📂 Carregar JSON</button>
             <button onclick="baixarConfigJson()">💾 Baixar config.json</button>
         </div>
@@ -235,12 +236,12 @@
             <div class="campo-grupo">
                 <div class="campo">
                     <label>ID da Fase</label>
-                    <input type="number" id="faseId" value="1" min="1" max="99">
+                    <input type="number" id="faseId" value="99" min="1" max="99">
                 </div>
                 <div class="campo">
                     <label>Tema Estético</label>
                     <select id="faseTheme">
-                        <option value="cyber_matrix">cyber_matrix (Redes/Digital)</option>
+                        <option value="cyber_matrix" selected>cyber_matrix (Redes/Digital)</option>
                         <option value="industrial_smog">industrial_smog (Fábricas/Trabalho)</option>
                         <option value="toxic_waste">toxic_waste (Amazônia/Mineração)</option>
                         <option value="biohazard">biohazard (Saúde/Ciência)</option>
@@ -251,34 +252,34 @@
             </div>
             <div class="campo">
                 <label>Nome do Setor / Fase</label>
-                <input type="text" id="faseName" value="Setor das Redes: O Gabinete do Ódio">
+                <input type="text" id="faseName" value="Setor de Testes: Operação Alvorada">
             </div>
             <div class="campo">
                 <label>Subtítulo Operacional</label>
-                <input type="text" id="faseSubtitle" value="Guerra da Informação e Desinformação em Massa">
+                <input type="text" id="faseSubtitle" value="Homologação de Novos Vetores de Resistência Popular">
             </div>
 
             <div class="secao-titulo">2. HOLOTRANSMISSÃO DA RESISTÊNCIA (MENTORIA)</div>
             <div class="campo-grupo">
                 <div class="campo">
                     <label>Nome do Mentor</label>
-                    <input type="text" id="mentorNome" value="Ana Elisa">
+                    <input type="text" id="mentorNome" value="Camarada Instrutor">
                 </div>
                 <div class="campo">
                     <label>Cargo / Patente</label>
-                    <input type="text" id="mentorRole" value="Oficial de Contrainteligência e Guerra Digital">
+                    <input type="text" id="mentorRole" value="Comissário de Engenharia Tática da Vanguarda">
                 </div>
                 <div class="campo">
                     <label>Caminho do Avatar</label>
-                    <input type="text" id="mentorAvatar" value="levels/level_1/mentor.png">
+                    <input type="text" id="mentorAvatar" value="levels/level_exemplo/mentor.png">
                 </div>
             </div>
             <div class="campo">
                 <label>Diálogo da Holotransmissão (1 frase por linha)</label>
-                <textarea id="mentorDialogo">Companheiras e companheiros da Vanguarda 13! Aqui é Ana Elisa na transmissão.
-O Gabinete Imperial ativou uma rede massiva de disparos de mentiras e ódio.
-Quebrem a criptografia do ódio e destruam os servidores centrais!
-Atenção aos POWER-UPS: colete as cápsulas da resistência para fortalecer sua nave!</textarea>
+                <textarea id="mentorDialogo">Atenção, combatentes da Vanguarda 13! Este é o módulo de treinamento tático da resistência.
+As forças reacionárias tentam sabotar nossa soberania digital e territorial com frotas autônomas.
+Mantenham a formação, coletem as cápsulas de apoio popular e neutralizem o protótipo imperial!
+A vitória depende da disciplina da nossa classe trabalhadora. Fogo sem trégua!</textarea>
             </div>
 
             <div class="secao-titulo">3. PARÂMETROS DA GRADE E PADRÃO DE MOVIMENTO</div>
@@ -327,30 +328,30 @@ Atenção aos POWER-UPS: colete as cápsulas da resistência para fortalecer sua
             <div class="campo-grupo">
                 <div class="campo">
                     <label>ID do Chefe</label>
-                    <input type="text" id="bossId" value="superbot_desinformacao">
+                    <input type="text" id="bossId" value="leviata_imperial_teste">
                 </div>
                 <div class="campo">
                     <label>Nome do Chefe</label>
-                    <input type="text" id="bossName" value="O Super-Robô da Mentira">
+                    <input type="text" id="bossName" value="O Leviatã do Capital Parasitário">
                 </div>
                 <div class="campo">
                     <label>Título / Posto</label>
-                    <input type="text" id="bossTitle" value="Nave Capitânia da Desinformação">
+                    <input type="text" id="bossTitle" value="Fortaleza Móvel dos Especuladores">
                 </div>
             </div>
             <div class="campo-grupo">
                 <div class="campo">
                     <label>Pontos de Vida (HP)</label>
-                    <input type="number" id="bossHp" value="30" min="10" max="150">
+                    <input type="number" id="bossHp" value="35" min="10" max="150">
                 </div>
                 <div class="campo">
                     <label>Pontos Concedidos</label>
-                    <input type="number" id="bossPoints" value="2000" step="100">
+                    <input type="number" id="bossPoints" value="2500" step="100">
                 </div>
                 <div class="campo">
                     <label>Padrão de Disparo (attackPattern)</label>
                     <select id="bossPattern">
-                        <option value="circular_spread">circular_spread (Leque de 5 projéteis)</option>
+                        <option value="circular_spread" selected>circular_spread (Leque de 5 projéteis)</option>
                         <option value="pincer_press">pincer_press (Salvas duplas verticais rápidas)</option>
                         <option value="spiral_slice">spiral_slice (Espiral helicoidal de lâminas)</option>
                         <option value="toxic_quad">toxic_quad (Rajada de 4 agulhas ácidas)</option>
@@ -597,6 +598,98 @@ Atenção aos POWER-UPS: colete as cápsulas da resistência para fortalecer sua
             dlAnchor.click();
         }
 
+        // Objeto padrão extraído de docs_fases/exemplo_level/config.json
+        const CONFIG_EXEMPLO_PADRAO = {
+            id: 99,
+            name: "Setor de Testes: Operação Alvorada",
+            subtitle: "Homologação de Novos Vetores de Resistência Popular",
+            theme: "cyber_matrix",
+            holotransmission: {
+                mentor: "Camarada Instrutor",
+                role: "Comissário de Engenharia Tática da Vanguarda",
+                avatar: "levels/level_exemplo/mentor.png",
+                dialogue: [
+                    "Atenção, combatentes da Vanguarda 13! Este é o módulo de treinamento tático da resistência.",
+                    "As forças reacionárias tentam sabotar nossa soberania digital e territorial com frotas autônomas.",
+                    "Mantenham a formação, coletem as cápsulas de apoio popular e neutralizem o protótipo imperial!",
+                    "A vitória depende da disciplina da nossa classe trabalhadora. Fogo sem trégua!"
+                ]
+            },
+            grid: {
+                rows: 4,
+                cols: 8,
+                spacingX: 42,
+                spacingY: 36,
+                pattern: "zigzag",
+                duration: 180,
+                initialSpeed: 0.65,
+                stepY: 4,
+                speedMultiplierPerKill: 1.015,
+                diveChance: 0.03
+            },
+            enemyTypes: [
+                { id: "drone_provocador", name: "Drone de Provocação Barata", hp: 1, points: 50, color: "#94a3b8", behavior: "march" },
+                { id: "troll_infiltrado", name: "Agitador Desestabilizador", hp: 2, points: 120, color: "#f87171", behavior: "dive" },
+                { id: "servidor_reacionario", name: "Bastilha da Desinformação", hp: 3, points: 250, color: "#ef4444", behavior: "tank" }
+            ],
+            boss: {
+                id: "leviata_imperial_teste",
+                name: "O Leviatã do Capital Parasitário",
+                title: "Fortaleza Móvel dos Especuladores",
+                hp: 35,
+                points: 2500,
+                attackPattern: "circular_spread"
+            },
+            palette: {
+                primary: "#38bdf8",
+                secondary: "#ef4444",
+                background: "#070b19"
+            }
+        };
+
+        function aplicarConfigNosCampos(c) {
+            if (c.id !== undefined) document.getElementById('faseId').value = c.id;
+            if (c.theme) document.getElementById('faseTheme').value = c.theme;
+            if (c.name) document.getElementById('faseName').value = c.name;
+            if (c.subtitle) document.getElementById('faseSubtitle').value = c.subtitle;
+            if (c.holotransmission) {
+                if (c.holotransmission.mentor) document.getElementById('mentorNome').value = c.holotransmission.mentor;
+                if (c.holotransmission.role) document.getElementById('mentorRole').value = c.holotransmission.role;
+                if (c.holotransmission.avatar) document.getElementById('mentorAvatar').value = c.holotransmission.avatar;
+                if (Array.isArray(c.holotransmission.dialogue)) {
+                    document.getElementById('mentorDialogo').value = c.holotransmission.dialogue.join('\n');
+                }
+            }
+            if (c.grid) {
+                if (c.grid.rows) document.getElementById('gridRows').value = c.grid.rows;
+                if (c.grid.cols) document.getElementById('gridCols').value = c.grid.cols;
+                if (c.grid.pattern) document.getElementById('gridPattern').value = c.grid.pattern;
+                if (c.grid.initialSpeed) document.getElementById('gridInitialSpeed').value = c.grid.initialSpeed;
+                if (c.grid.stepY) document.getElementById('gridStepY').value = c.grid.stepY;
+                if (c.grid.speedMultiplierPerKill) document.getElementById('gridSpeedMult').value = c.grid.speedMultiplierPerKill;
+                if (c.grid.diveChance) document.getElementById('gridDiveChance').value = c.grid.diveChance;
+            }
+            if (c.boss) {
+                if (c.boss.id) document.getElementById('bossId').value = c.boss.id;
+                if (c.boss.name) document.getElementById('bossName').value = c.boss.name;
+                if (c.boss.title) document.getElementById('bossTitle').value = c.boss.title;
+                if (c.boss.hp) document.getElementById('bossHp').value = c.boss.hp;
+                if (c.boss.points) document.getElementById('bossPoints').value = c.boss.points;
+                if (c.boss.attackPattern) document.getElementById('bossPattern').value = c.boss.attackPattern;
+            }
+            if (c.palette) {
+                if (c.palette.primary) document.getElementById('corPrimaria').value = c.palette.primary;
+                if (c.palette.secondary) document.getElementById('corSecundaria').value = c.palette.secondary;
+                if (c.palette.background) document.getElementById('corFundo').value = c.palette.background;
+            }
+            atualizarParametrosSimulador();
+        }
+
+        function carregarExemploPadrao() {
+            aplicarConfigNosCampos(CONFIG_EXEMPLO_PADRAO);
+            alert('Exemplo de nível (Operação Alvorada) carregado com sucesso!');
+        }
+
         document.getElementById('inputCarregarJson').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -604,41 +697,7 @@ Atenção aos POWER-UPS: colete as cápsulas da resistência para fortalecer sua
             reader.onload = function(evt) {
                 try {
                     const c = JSON.parse(evt.target.result);
-                    if (c.id) document.getElementById('faseId').value = c.id;
-                    if (c.theme) document.getElementById('faseTheme').value = c.theme;
-                    if (c.name) document.getElementById('faseName').value = c.name;
-                    if (c.subtitle) document.getElementById('faseSubtitle').value = c.subtitle;
-                    if (c.holotransmission) {
-                        if (c.holotransmission.mentor) document.getElementById('mentorNome').value = c.holotransmission.mentor;
-                        if (c.holotransmission.role) document.getElementById('mentorRole').value = c.holotransmission.role;
-                        if (c.holotransmission.avatar) document.getElementById('mentorAvatar').value = c.holotransmission.avatar;
-                        if (Array.isArray(c.holotransmission.dialogue)) {
-                            document.getElementById('mentorDialogo').value = c.holotransmission.dialogue.join('\n');
-                        }
-                    }
-                    if (c.grid) {
-                        if (c.grid.rows) document.getElementById('gridRows').value = c.grid.rows;
-                        if (c.grid.cols) document.getElementById('gridCols').value = c.grid.cols;
-                        if (c.grid.pattern) document.getElementById('gridPattern').value = c.grid.pattern;
-                        if (c.grid.initialSpeed) document.getElementById('gridInitialSpeed').value = c.grid.initialSpeed;
-                        if (c.grid.stepY) document.getElementById('gridStepY').value = c.grid.stepY;
-                        if (c.grid.speedMultiplierPerKill) document.getElementById('gridSpeedMult').value = c.grid.speedMultiplierPerKill;
-                        if (c.grid.diveChance) document.getElementById('gridDiveChance').value = c.grid.diveChance;
-                    }
-                    if (c.boss) {
-                        if (c.boss.id) document.getElementById('bossId').value = c.boss.id;
-                        if (c.boss.name) document.getElementById('bossName').value = c.boss.name;
-                        if (c.boss.title) document.getElementById('bossTitle').value = c.boss.title;
-                        if (c.boss.hp) document.getElementById('bossHp').value = c.boss.hp;
-                        if (c.boss.points) document.getElementById('bossPoints').value = c.boss.points;
-                        if (c.boss.attackPattern) document.getElementById('bossPattern').value = c.boss.attackPattern;
-                    }
-                    if (c.palette) {
-                        if (c.palette.primary) document.getElementById('corPrimaria').value = c.palette.primary;
-                        if (c.palette.secondary) document.getElementById('corSecundaria').value = c.palette.secondary;
-                        if (c.palette.background) document.getElementById('corFundo').value = c.palette.background;
-                    }
-                    atualizarParametrosSimulador();
+                    aplicarConfigNosCampos(c);
                     alert('Nível carregado com sucesso no Construtor Tático!');
                 } catch (err) {
                     alert('Erro ao processar arquivo JSON: ' + err.message);
@@ -648,7 +707,7 @@ Atenção aos POWER-UPS: colete as cápsulas da resistência para fortalecer sua
         });
 
         // Inicialização
-        atualizarParametrosSimulador();
+        aplicarConfigNosCampos(CONFIG_EXEMPLO_PADRAO);
         loopSimulador();
     </script>
 </body>
