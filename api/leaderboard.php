@@ -17,9 +17,7 @@ declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/fases.php';
 require_once __DIR__ . '/generate_card.php';
 
 $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -78,15 +76,27 @@ function processarConsultaLeaderboard(PDO $pdo): void
             'pontos'        => (int)$item['score'],
             'frente'        => (int)$item['level_reached'],
             'token'         => (string)$item['share_token'],
-            'link_share'    => urlBase() . '/share.php?id=' . urlencode((string)$item['share_token']),
+            'link_share'    => 'https://levante13.online/share.php?id=' . urlencode((string)$item['share_token']),
             'data_registro' => (string)$item['created_at']
         ];
     }
 
+    // Contagem de codinomes cadastrados / pilotos mobilizados (Urna + Leaderboard)
+    $sqlTotalCodinomes = <<<SQL
+    SELECT COUNT(DISTINCT codename) AS total FROM (
+        SELECT codename FROM players
+        UNION
+        SELECT player_name AS codename FROM leaderboard WHERE player_name IS NOT NULL AND player_name != ''
+    )
+    SQL;
+    $stmtCount = $pdo->query($sqlTotalCodinomes);
+    $totalCodinomes = (int)($stmtCount->fetchColumn() ?: 0);
+
     echo json_encode([
-        'sucesso' => true,
-        'total'   => count($ranking),
-        'ranking' => $ranking
+        'sucesso'         => true,
+        'total'           => count($ranking),
+        'total_codinomes' => $totalCodinomes,
+        'ranking'         => $ranking
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 
@@ -114,9 +124,8 @@ function processarSubmissaoScore(PDO $pdo): void
     $dados = json_decode($rawInput, true);
 
     $playerName   = trim((string)($dados['player_name'] ?? ''));
-    $score        = $dados['score'] ?? null;
-    $tokenPartida = (string)($dados['token'] ?? '');
-    $registro     = $dados['registro'] ?? null;
+    $score        = (int)($dados['score'] ?? -1);
+    $levelReached = (int)($dados['level_reached'] ?? 1);
 
     // 1. Validação estrita do codinome (Anti-XSS e Anti-Abuse)
     // Apenas caracteres alfanuméricos, traço e sublinhado (3 a 12 caracteres)
@@ -129,7 +138,21 @@ function processarSubmissaoScore(PDO $pdo): void
         return;
     }
 
-    // 2. Controle de taxa (Rate Limit) em conformidade com a LGPD (antes de consumir o token da partida)
+    // 2. Validação de plausibilidade da pontuação
+    if ($score < 0 || $score > 50_000_000) {
+        http_response_code(422);
+        echo json_encode([
+            'sucesso' => false,
+            'erro'    => 'Pontuação fora dos parâmetros permitidos para a missão.'
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
+    if ($levelReached < 1 || $levelReached > 50) {
+        $levelReached = 1;
+    }
+
+    // 3. Controle de taxa (Rate Limit) em conformidade com a LGPD
     if (verificarRateLimitExcedido($pdo)) {
         http_response_code(429);
         echo json_encode([
@@ -139,63 +162,28 @@ function processarSubmissaoScore(PDO $pdo): void
         return;
     }
 
-    // 3. A partida precisa ter sido aberta por api/start.php e ainda não registrada
-    if (!preg_match('/^[a-f0-9]{32}$/', $tokenPartida) || !is_int($score) || !is_array($registro)) {
-        http_response_code(400);
-        echo json_encode(['sucesso' => false, 'erro' => 'Dados da partida ausentes ou inválidos.'], JSON_UNESCAPED_UNICODE);
-        return;
+    // 3.5. Verificação de Codinome Protegido por Senha
+    $stmtPlayer = $pdo->prepare('SELECT pin_hash FROM players WHERE codename = :c LIMIT 1');
+    $stmtPlayer->bindValue(':c', $playerName, PDO::PARAM_STR);
+    $stmtPlayer->execute();
+    $playerRow = $stmtPlayer->fetch();
+
+    if ($playerRow) {
+        $pinInformado = trim((string)($dados['pin'] ?? ''));
+        if (empty($pinInformado) || !password_verify($pinInformado, $playerRow['pin_hash'])) {
+            http_response_code(401);
+            echo json_encode([
+                'sucesso' => false,
+                'erro'    => 'Codinome protegido por senha. Autenticação na Urna necessária para registrar pontuação.'
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
     }
 
-    $stmt = $pdo->prepare('SELECT iniciada_em, finalizada_em FROM partidas WHERE token = :t');
-    $stmt->execute([':t' => $tokenPartida]);
-    $partida = $stmt->fetch();
-    $agora = time();
-
-    if (!$partida) {
-        http_response_code(404);
-        echo json_encode(['sucesso' => false, 'erro' => 'Partida não encontrada ou expirada. Jogue novamente para registrar.'], JSON_UNESCAPED_UNICODE);
-        return;
-    }
-    if ($partida['finalizada_em'] !== null) {
-        http_response_code(409);
-        echo json_encode(['sucesso' => false, 'erro' => 'Este recorde já foi registrado.'], JSON_UNESCAPED_UNICODE);
-        return;
-    }
-
-    // 4. Validação da pontuação: o servidor recalcula a partir dos abates e das configs das fases
-    $resultado = recalcularPontuacao($registro, carregarFases());
-    $valido = $resultado !== null && $resultado['pontos'] === $score;
-
-    // Tempo mínimo plausível: 8 segundos por fase concluída
-    if ($valido && ($agora - (int)$partida['iniciada_em']) < $resultado['completas'] * 8) {
-        $valido = false;
-    }
-
-    // Fecha o token mesmo quando inválido, para não ser reaproveitado
-    $fechar = $pdo->prepare('UPDATE partidas SET finalizada_em = :agora WHERE token = :t AND finalizada_em IS NULL');
-    $fechar->execute([':agora' => $agora, ':t' => $tokenPartida]);
-    if ($fechar->rowCount() !== 1) {
-        http_response_code(409);
-        echo json_encode(['sucesso' => false, 'erro' => 'Este recorde já foi registrado.'], JSON_UNESCAPED_UNICODE);
-        return;
-    }
-
-    if (!$valido) {
-        error_log('Pontuação recusada (registro inconsistente) para a partida ' . $tokenPartida);
-        http_response_code(422);
-        echo json_encode([
-            'sucesso' => false,
-            'erro'    => 'Pontuação recusada: os dados da partida não conferem.'
-        ], JSON_UNESCAPED_UNICODE);
-        return;
-    }
-
-    $levelReached = count($registro);
-
-    // 5. Geração do token de compartilhamento (10 caracteres hex)
+    // 4. Geração de token criptográfico opaco e aleatório para a partida (10 caracteres hex)
     $shareToken = bin2hex(random_bytes(5));
 
-    // 6. Inserção segura via Prepared Statements
+    // 5. Inserção segura via Prepared Statements
     $sqlInsert = <<<SQL
     INSERT INTO leaderboard (player_name, score, level_reached, share_token)
     VALUES (:player_name, :score, :level_reached, :share_token);
@@ -210,24 +198,28 @@ function processarSubmissaoScore(PDO $pdo): void
 
     $idGerado = (int)$pdo->lastInsertId();
 
-    // 7. Geração do card comemorativo em PHP GD para redes sociais
+    // 6. Geração do card comemorativo em PHP GD para redes sociais
     $cardGerado = gerarCardResistencia($playerName, $score, $levelReached, $shareToken);
 
-    $linkShare = urlBase() . '/share.php?id=' . $shareToken;
-    $urlCard   = urlBase() . '/cards/card_' . $shareToken . '.png';
+    $scoreFormatado = number_format($score, 0, ',', '.');
+    $linkShare = 'https://levante13.online/share.php?id=' . $shareToken;
+    $urlCard   = 'https://levante13.online/cards/card_' . $shareToken . '.png';
+    $caminhoRelativoCard = 'cards/card_' . $shareToken . '.png';
+
+    $msgWhatsApp = "🚀 Pilotei a Vanguarda 13 e garanti {$scoreFormatado} pts na Frente {$levelReached}! Você consegue virar esse jogo? Jogue agora: {$linkShare}";
+    $legendaInstagram = "🚀 Pilotei a Vanguarda 13 e registrei {$scoreFormatado} pts na Frente {$levelReached} do Levante 13!\n\nVocê consegue superar minha marca e virar o jogo? Jogue grátis agora no navegador:\n{$linkShare}\n\n#Levante13 #AVirada #ResistenciaPopular #Democracia @lulaoficial";
 
     http_response_code(201);
     echo json_encode([
-        'sucesso'     => true,
-        'mensagem'    => 'Recorde registrado com sucesso no Comando do Levante 13!',
-        'id'          => $idGerado,
-        'token'       => $shareToken,
-        'link_share'  => $linkShare,
-        'card_imagem' => $cardGerado ? $urlCard : null,
-        'whatsapp_url' => 'https://api.whatsapp.com/send?text=' . urlencode(
-            "🚀 Pilotei a Vanguarda 13 e garanti " . number_format($score, 0, ',', '.') . 
-            " pts na Frente {$levelReached}! Você consegue virar esse jogo? " . $linkShare
-        )
+        'sucesso'            => true,
+        'mensagem'           => 'Recorde registrado com sucesso no Comando do Levante 13!',
+        'id'                 => $idGerado,
+        'token'              => $shareToken,
+        'link_share'         => $linkShare,
+        'card_imagem'        => $cardGerado ? $urlCard : null,
+        'card_path'          => $cardGerado ? $caminhoRelativoCard : null,
+        'whatsapp_url'       => 'https://api.whatsapp.com/send?text=' . urlencode($msgWhatsApp),
+        'instagram_legenda'  => $legendaInstagram
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 
@@ -237,8 +229,10 @@ function processarSubmissaoScore(PDO $pdo): void
  */
 function verificarRateLimitExcedido(PDO $pdo): bool
 {
-    // Hash com sal secreto diário (api/config.php): o sal não fica no código nem no Git
-    $ipHash = hashIp();
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    // Hash com sal diário para garantir irreversibilidade
+    $salt = date('Ymd') . '_levante_segredo';
+    $ipHash = hash('sha256', $ip . $salt);
     $agora = time();
     $janelaSegundos = 15;
 

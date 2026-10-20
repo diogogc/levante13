@@ -3,14 +3,15 @@
   "name": "Complexo da Vida: O Cerco Negacionista",
   "subtitle": "A Ciência a Serviço do Povo e a Defesa do SUS",
   "theme": "bio_hazard",
+  "destructionEffect": "nevoa",
   "holotransmission": {
-    "mentor": "Comando da Saúde Popular",
-    "role": "Cientista-Chefe da Saúde Pública e Sanitarista",
+    "mentor": "Dr. Drauzio Varella",
+    "role": "Médico Oncologista, Sanitarista e Cientista Popular",
     "avatar": "levels/level_4/mentor.png",
     "dialogue": [
-      "Vanguarda 13, aqui é o Comando da Saúde Coletiva na escuta.",
-      "As forças obscurantistas tentaram sabotar a imunização, asfixiar os leitos e enriquecer traficantes de remédios ineficazes.",
-      "A ciência pública e o SUS são as maiores trincheiras da humanidade. Dispersem a névoa tóxica e garantam a vacina nos braços do povo!"
+      "Olá a todos da Vanguarda 13. Aqui é o Dr. Drauzio Varella.",
+      "O obscurantismo e o negacionismo atacaram as unidades do Sistema Único de Saúde, espalhando pânico contra vacinas e destruindo estoques de remédios essenciais.",
+      "A saúde é um direito constitucional de todos e um dever inegociável do Estado. Defendam nossos cientistas, vacinem a esperança e restaurem a vida!"
     ]
   },
   "grid": {
@@ -23,7 +24,7 @@
     "initialSpeed": 0.95,
     "stepY": 4.5,
     "speedMultiplierPerKill": 1.022,
-    "diveChance": 0.10
+    "diveChance": 0.1
   },
   "enemyTypes": [
     {
@@ -31,7 +32,7 @@
       "name": "Cápsula de Mentiras",
       "hp": 1,
       "points": 70,
-      "color": "#cbd5e1",
+      "color": "#f472b6",
       "behavior": "march"
     },
     {
@@ -39,7 +40,7 @@
       "name": "Disparador Antivacina",
       "hp": 2,
       "points": 170,
-      "color": "#ec4899",
+      "color": "#a855f7",
       "behavior": "dive"
     },
     {
@@ -47,7 +48,7 @@
       "name": "Câmara de Desinformação",
       "hp": 5,
       "points": 380,
-      "color": "#a855f7",
+      "color": "#7e22ce",
       "behavior": "tank"
     }
   ],

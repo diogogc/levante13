@@ -3,15 +3,16 @@
   "name": "Fortaleza Soberana: A Esplanada da Democracia",
   "subtitle": "A Grande Virada Popular na Praça dos Três Poderes",
   "theme": "sovereign_flag",
+  "destructionEffect": "sucata",
   "holotransmission": {
     "mentor": "Lula",
     "role": "Líder Histórico da Aliança e Presidente do Brasil",
     "avatar": "levels/level_6/mentor.png",
     "dialogue": [
-      "Queridas companheiras e queridos companheiros da Vanguarda 13:",
-      "Este país pertence a cada uma das 215 milhões de brasileiras e brasileiros que acordam cedo para trabalhar com honestidade.",
-      "Eles tentaram dar golpe e destruir a nossa democracia, mas a classe trabalhadora não se ajoelha. A esperança venceu o medo no passado e vai vencer o fascismo agora!",
-      "Vamos juntos fazer a grande virada e reconstruir o Brasil do povo!"
+      "Meus companheiros e minhas companheiras de todo o Brasil, aqui é o Lula!",
+      "Chegamos à batalha final no coração de Brasília. Os golpistas cercaram o Palácio do Povo e o Congresso para tentar calar a vontade soberana das urnas.",
+      "Eles podem tentar destruir prédios, mas nunca destruirão o sonho de um povo que quer comer, estudar, trabalhar e viver com dignidade.",
+      "Subam a rampa da democracia com coragem! O Brasil vai voltar a ser feliz! Vamos à vitória!"
     ]
   },
   "grid": {
@@ -32,7 +33,7 @@
       "name": "Invasor Golpista",
       "hp": 2,
       "points": 90,
-      "color": "#84cc16",
+      "color": "#a1a1aa",
       "behavior": "march"
     },
     {
@@ -40,7 +41,7 @@
       "name": "Patriota do Caminhão",
       "hp": 3,
       "points": 200,
-      "color": "#eab308",
+      "color": "#ea580c",
       "behavior": "dive"
     },
     {
@@ -48,7 +49,7 @@
       "name": "Blindado Antidemocrático",
       "hp": 6,
       "points": 450,
-      "color": "#15803d",
+      "color": "#71717a",
       "behavior": "tank"
     }
   ],
