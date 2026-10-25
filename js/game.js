@@ -1791,7 +1791,7 @@ class MotorLevante13 {
             this.ctx.fillStyle = '#facc15';
             this.ctx.textAlign = 'left';
             let labelChefe = this.chefe.nome.toUpperCase();
-            if (this.chefe.idFase === 6) {
+            if (this.chefe.idFase === 7) {
                 const nomesFasesFinal = ['[FASE 1/4: BLINDAGEM]', '[FASE 2/4: ASA CORTADA]', '[FASE 3/4: NÚCLEO EXPOSTO]', '[FASE 4/4: CRÍTICO!]'];
                 labelChefe = `A HIDRA ${nomesFasesFinal[this.chefe.faseDano - 1] || ''}`;
             }
@@ -1809,7 +1809,7 @@ class MotorLevante13 {
 
             // Cor da barra de vida varia com a fase/perigo
             let corHp = '#ef4444';
-            if (this.chefe.idFase === 6) {
+            if (this.chefe.idFase === 7) {
                 if (this.chefe.faseDano === 2) corHp = '#f97316';
                 else if (this.chefe.faseDano === 3) corHp = '#facc15';
                 else if (this.chefe.faseDano === 4) {
@@ -1842,7 +1842,7 @@ class MotorLevante13 {
 
             // Sprite do chefe no momento da queda
             let spriteDesenho = anim.sprite;
-            if (anim.idFase === 6 && anim.spritesFases.length >= anim.faseDano) {
+            if (anim.idFase === 7 && anim.spritesFases.length >= anim.faseDano) {
                 const sf = anim.spritesFases[anim.faseDano - 1];
                 if (sf && sf.complete && sf.naturalWidth > 0) spriteDesenho = sf;
             }
